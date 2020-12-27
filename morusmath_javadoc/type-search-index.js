@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"morusmath","l":"Calculator"},{"p":"morusmath","l":"Converter"}]
