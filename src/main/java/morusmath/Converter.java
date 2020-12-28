@@ -2,42 +2,75 @@ package morusmath;
 
 import java.math.BigInteger;
 
+/**
+ * <b>Converter</b><br>
+ * <br>
+ * <i>public class Converter</i><br>
+ * <br>
+ * Class for converting between unit systems.
+ */
+
 @SuppressWarnings("unused")
 public class Converter {
-    //TODO make javadoc to Converter
     private final int precision;
 
-    public Converter() {
-        this.precision = 10;
-    }
-
+    /**
+     * <b>Converter</b><br>
+     * <br>
+     * <i>public Converter(int precision)</i><br>
+     * <br>
+     * Returns instance of Converter and sets given precision.
+     *
+     * @param precision precision to be set.
+     */
     public Converter(int precision) {
         this.precision = precision;
     }
 
+    /**
+     * <b>binToDec</b><br>
+     * <br>
+     * <i>public String binToDec(String bin)</i><br>
+     * <br>
+     * Converts binary number to decimal number.
+     *
+     * @param bin binary number from which decimal number would be calculated.
+     * @return decimal version of number.
+     */
     public String binToDec(String bin) {
-        Calculator bdc = new Calculator(0);
+        Calculator calculator = new Calculator(0);
         String sum = "0";
         char[] chars = bin.toCharArray();
         int modifier = chars.length - 1;
         for (int i = 0; i < chars.length; i++) {
             String a = "" + chars[i];
             if (a.equals("1")) {
-                String power = bdc.power("2", (modifier - i));
-                sum = bdc.add(sum, power);
+                String power = calculator.power("2", (modifier - i));
+                sum = calculator.add(sum, power);
             }
         }
         return sum;
     }
 
+    /**
+     * <b>binToHex</b><br>
+     * <br>
+     * <i>public String binToHex(String bin)</i><br>
+     * <br>
+     * Converts binary number to hexadecimal number.
+     *
+     * @param bin binary number from which hexadecimal number would be calculated.
+     * @return hexadecimal version of number.
+     */
     public String binToHex(String bin) {
-        Calculator bdc = new Calculator(0);
+        Calculator calculator = new Calculator(0);
         String dec = "0";
         char[] chars = bin.toCharArray();
         int modifier = chars.length - 1;
         for (int i = 0; i < chars.length; i++) {
-            String temp = bdc.multiply(("" + chars[i]), bdc.power("2", (modifier - i)));
-            dec = bdc.add(dec, temp);
+            String temp =
+                    calculator.multiply(("" + chars[i]), calculator.power("2", (modifier - i)));
+            dec = calculator.add(dec, temp);
         }
 
         StringBuilder result = new StringBuilder();
@@ -61,12 +94,26 @@ public class Converter {
             if (new BigInteger(dec).compareTo(new BigInteger("16")) < 0) {
                 break;
             }
-            dec = bdc.divide(dec, "16");
+            dec = calculator.divide(dec, "16");
         }
         return result.toString();
     }
 
+    /**
+     * <b>decToBin</b><br>
+     * <br>
+     * <i>public String decToBin(String dec)</i><br>
+     * <br>
+     * Converts decimal number to binary number.
+     *
+     * @param dec positive decimal number without decimal separator from which binary number would be calculated.
+     * @return binary version of number.
+     */
     public String decToBin(String dec) {
+        if (dec.contains("-") || dec.contains(".")) {
+            throw new NumberFormatException(
+                    "Provided decimal number is negative or contains decimal separator.");
+        }
         BigInteger bigIntDec = new BigInteger(dec);
         BigInteger temp;
         StringBuilder result = new StringBuilder();
@@ -82,98 +129,180 @@ public class Converter {
         return result.toString();
     }
 
+
+    /**
+     * <b>decToHex</b><br>
+     * <br>
+     * <i>public String decToHex(String dec)</i><br>
+     * <br>
+     * Converts decimal number to hexadecimal number.
+     *
+     * @param dec positive decimal number without decimal separator from which hexadecimal number would be calculated.
+     * @return hexadecimal version of number.
+     */
     public String decToHex(String dec) {
-        int intDec = Integer.parseInt(dec);
+        if (dec.contains("-") || dec.contains(".")) {
+            throw new NumberFormatException(
+                    "Provided decimal number is negative or contains decimal separator.");
+        }
+        Calculator calculator = new Calculator(0);
         StringBuilder result = new StringBuilder();
         while (true) {
-            int temp = intDec % 16;
-            String modifier = "" + temp;
-            if (temp == 10) {
+            String modifier = calculator.reminder(dec, "16");
+            //noinspection IfCanBeSwitch
+            if (modifier.equals("10")) {
                 modifier = "A";
-            } else if (temp == 11) {
+            } else if (modifier.equals("11")) {
                 modifier = "B";
-            } else if (temp == 12) {
+            } else if (modifier.equals("12")) {
                 modifier = "C";
-            } else if (temp == 13) {
+            } else if (modifier.equals("13")) {
                 modifier = "D";
-            } else if (temp == 14) {
+            } else if (modifier.equals("14")) {
                 modifier = "E";
-            } else if (temp == 15) {
+            } else if (modifier.equals("15")) {
                 modifier = "F";
             }
-            result.insert(0, "" + modifier);
-            if (intDec < 16) {
+            result.insert(0, modifier);
+            if (calculator.biggerEqualSmaller("16", dec) < 0) {
                 break;
             }
-            intDec = intDec / 16;
+            String reminder = calculator.reminder(dec, "16");
+            dec = calculator.subtract(dec, reminder);
+            dec = calculator.divide(dec, "16");
         }
         return result.toString();
     }
 
+    /**
+     * <b>getPrecision</b><br>
+     * <br>
+     * <i>public int getPrecision()</i><br>
+     * <br>
+     * Gets this Converter instance precision.
+     *
+     * @return precision of this Converter instance.
+     */
     public int getPrecision() {
         return precision;
     }
 
+    /**
+     * <b>gradToRadian</b><br>
+     * <br>
+     * <i>public String gradToRadian(String grad)</i><br>
+     * <br>
+     * Converts grad value to radian value.
+     *
+     * @param grad grad angle from which radian angle would be calculated.
+     * @return radian angle.
+     */
     public String gradToRadian(String grad) {
-        Calculator bdc = new Calculator(this.precision);
-        String nominator = bdc.multiply(grad, Calculator.PI);
-        return bdc.divide(nominator, "200");
+        Calculator calculator = new Calculator(this.precision);
+        String nominator = calculator.multiply(grad, Calculator.PI);
+        return calculator.divide(nominator, "200");
     }
 
+    /**
+     * <b>hexToBin</b><br>
+     * <br>
+     * <i>public String hexToBin(String hex)</i><br>
+     * <br>
+     * Converts hexadecimal number to binary number.
+     *
+     * @param hex hexadecimal number from which binary number would be calculated.
+     * @return binary version of number.
+     */
     public String hexToBin(String hex) {
-        int dec = 0;
+        Calculator calculator = new Calculator(0);
+        String dec = "0";
         String[] hexTab = hex.split("");
         for (int i = 0; i < hexTab.length; i++) {
-            switch (hexTab[i]) {
-                case "A" -> hexTab[i] = "10";
-                case "B" -> hexTab[i] = "11";
-                case "C" -> hexTab[i] = "12";
-                case "D" -> hexTab[i] = "13";
-                case "E" -> hexTab[i] = "14";
-                case "F" -> hexTab[i] = "15";
+            if (hexTab[i].equalsIgnoreCase("A")) {
+                hexTab[i] = "10";
+            } else if (hexTab[i].equalsIgnoreCase("B")) {
+                hexTab[i] = "11";
+            } else if (hexTab[i].equalsIgnoreCase("C")) {
+                hexTab[i] = "12";
+            } else if (hexTab[i].equalsIgnoreCase("D")) {
+                hexTab[i] = "13";
+            } else if (hexTab[i].equalsIgnoreCase("E")) {
+                hexTab[i] = "14";
+            } else if (hexTab[i].equalsIgnoreCase("F")) {
+                hexTab[i] = "15";
             }
         }
         int modifier = hexTab.length - 1;
         for (int i = 0; i < hexTab.length; i++) {
-            dec += Integer.parseInt(hexTab[i]) * Math.pow(16, (modifier - i));
+            String power = calculator.power("16", modifier - i);
+            String toAdd = calculator.multiply(hexTab[i], power);
+            dec = calculator.add(dec, toAdd);
         }
 
         StringBuilder result = new StringBuilder();
         while (true) {
-            int temp = dec % 2;
-            String decModifier = "" + temp;
-            result.insert(0, "" + decModifier);
-            if (dec < 2) {
+            String reminder = calculator.reminder(dec, "2");
+            result.insert(0, reminder);
+            if (calculator.biggerEqualSmaller("2", dec) < 0) {
                 break;
             }
-            dec = dec / 2;
+            dec = calculator.subtract(dec, reminder);
+            dec = calculator.divide(dec, "2");
         }
         return result.toString();
     }
 
+    /**
+     * <b>hexToDec</b><br>
+     * <br>
+     * <i>public String hexToDec(String hex)</i><br>
+     * <br>
+     * Converts hexadecimal number to decimal number.
+     *
+     * @param hex hexadecimal number from which decimal number would be calculated.
+     * @return decimal version of number.
+     */
     public String hexToDec(String hex) {
-        int result = 0;
+        Calculator calculator = new Calculator(0);
+        String result = "0";
         String[] hexTab = hex.split("");
         for (int i = 0; i < hexTab.length; i++) {
-            switch (hexTab[i]) {
-                case "A" -> hexTab[i] = "10";
-                case "B" -> hexTab[i] = "11";
-                case "C" -> hexTab[i] = "12";
-                case "D" -> hexTab[i] = "13";
-                case "E" -> hexTab[i] = "14";
-                case "F" -> hexTab[i] = "15";
+            if (hexTab[i].equalsIgnoreCase("A")) {
+                hexTab[i] = "10";
+            } else if (hexTab[i].equalsIgnoreCase("B")) {
+                hexTab[i] = "11";
+            } else if (hexTab[i].equalsIgnoreCase("C")) {
+                hexTab[i] = "12";
+            } else if (hexTab[i].equalsIgnoreCase("D")) {
+                hexTab[i] = "13";
+            } else if (hexTab[i].equalsIgnoreCase("E")) {
+                hexTab[i] = "14";
+            } else if (hexTab[i].equalsIgnoreCase("F")) {
+                hexTab[i] = "15";
             }
         }
         int modifier = hexTab.length - 1;
         for (int i = 0; i < hexTab.length; i++) {
-            result += Integer.parseInt(hexTab[i]) * Math.pow(16, (modifier - i));
+            String power = calculator.power("16", modifier - i);
+            String toAdd = calculator.multiply(hexTab[i], power);
+            result = calculator.add(result, toAdd);
         }
-        return "" + result;
+        return result;
     }
 
+    /**
+     * <b>radianToGrad</b><br>
+     * <br>
+     * <i>public String radianToGrad(String radian)</i><br>
+     * <br>
+     * Converts radian value to grad value.
+     *
+     * @param radian radian angle from which grad angle would be calculated.
+     * @return grad angle.
+     */
     public String radianToGrad(String radian) {
-        Calculator bdc = new Calculator(this.precision);
-        String nominator = bdc.multiply(radian, "200");
-        return bdc.divide(nominator, Calculator.PI);
+        Calculator calculator = new Calculator(this.precision);
+        String nominator = calculator.multiply(radian, "200");
+        return calculator.divide(nominator, Calculator.PI);
     }
 }

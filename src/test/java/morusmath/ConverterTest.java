@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ConverterTest {
     @Test
     public void decToBinTest() {
-        Converter converter = new Converter();
+        Converter converter = new Converter(0);
         assertEquals("1010", converter.decToBin("10"));
     }
 }
