@@ -7,7 +7,7 @@ import morusmath.exceptions.MatrixException;
  * <br>
  * <i>public class Matrix</i><br>
  * <br>
- * Class for matrix operations.
+ * Class for matrix operations. It is recommended to validate matrixes with appropriate method from this class.
  */
 @SuppressWarnings("unused")
 public class Matrix {
@@ -27,21 +27,6 @@ public class Matrix {
     }
 
     /**
-     * <b>checkIfMatrixesHaveTheSameSize</b><br>
-     * <br>
-     * <i>public boolean checkIfMatrixesHaveTheSameSize(String[][] matrixA, String[][] matrixB)</i><br>
-     * <br>
-     * Returns true if matrixes have the same size, false otherwise.
-     *
-     * @param matrixA first matrix to be compared.
-     * @param matrixB second matrix to be compared.
-     * @return true if matrixes have the same size, false otherwise.
-     */
-    public boolean checkIfMatrixesHaveTheSameSize(String[][] matrixA, String[][] matrixB) {
-        return matrixA.length == matrixB.length && matrixA[0].length == matrixB[0].length;
-    }
-
-    /**
      * <b>getPrecision</b><br>
      * <br>
      * <i>public int getPrecision()</i><br>
@@ -52,6 +37,35 @@ public class Matrix {
      */
     public int getPrecision() {
         return this.precision;
+    }
+
+    /**
+     * <b>matrixIsSquare</b><br>
+     * <br>
+     * <i>public boolean matrixIsSquare(String[][] matrix)</i><br>
+     * <br>
+     * Returns true if matrix is square, false otherwise.
+     *
+     * @param matrix matrix to be compared.
+     * @return true if matrix is square, false otherwise.
+     */
+    public boolean matrixIsSquare(String[][] matrix) {
+        return matrix.length == matrix[0].length;
+    }
+
+    /**
+     * <b>matrixesHaveTheSameSize</b><br>
+     * <br>
+     * <i>public boolean matrixesHaveTheSameSize(String[][] matrixA, String[][] matrixB)</i><br>
+     * <br>
+     * Returns true if matrixes have the same size, false otherwise.
+     *
+     * @param matrixA first matrix to be compared.
+     * @param matrixB second matrix to be compared.
+     * @return true if matrixes have the same size, false otherwise.
+     */
+    public boolean matrixesHaveTheSameSize(String[][] matrixA, String[][] matrixB) {
+        return matrixA.length == matrixB.length && matrixA[0].length == matrixB[0].length;
     }
 
     /**

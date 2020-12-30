@@ -2,3 +2,4 @@
 out/
 *.iml
 junitError.log
+morusmath_coverage/

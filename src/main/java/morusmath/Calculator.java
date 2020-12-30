@@ -76,8 +76,7 @@ public class Calculator {
      * @return arcus cosine in radians.
      */
     public String arcCos(String cosine) {
-        String piBy2 = divide(Calculator.PI, "2");
-        return subtract(piBy2, arcSin(cosineToSine(cosine)));
+        return arcSin(cosineToSine(cosine));
     }
 
     /**
