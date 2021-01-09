@@ -12,7 +12,6 @@ import java.math.RoundingMode;
  * Class for math operations.
  */
 
-@SuppressWarnings("unused")
 public class Calculator {
     /**
      * Value of PI with 2000 decimal places.
@@ -76,7 +75,30 @@ public class Calculator {
      * @return arcus cosine in radians.
      */
     public String arcCos(String cosine) {
-        return arcSin(cosineToSine(cosine));
+        String result;
+        int tempPrecision = this.precision;
+        this.precision = this.precision + 10;
+
+        if (biggerEqualSmaller(cosine, "1") == 0 ||
+                biggerEqualSmaller(cosine, "-1") == 0) {
+            this.precision = tempPrecision;
+            return roundNumberToGivenPrecision("0", this.precision);
+        } else if (biggerEqualSmaller(cosine, "0") == 0) {
+            result = divide(PI, "2");
+            this.precision = tempPrecision;
+            return new BigDecimal(result)
+                    .setScale(this.precision, RoundingMode.HALF_EVEN).toPlainString();
+        } else if (biggerEqualSmaller(absolute(cosine), "1") < 0) {
+            throw new ArithmeticException("Trying to calculate arcCos from |x| > 1");
+        }
+
+        result = arcSin(cosineToSine(cosine));
+        if (biggerEqualSmaller("0", cosine) < 0) {
+            result = subtract(PI, result);
+        }
+        this.precision = tempPrecision;
+        return new BigDecimal(result)
+                .setScale(this.precision, RoundingMode.HALF_EVEN).toPlainString();
     }
 
     /**
@@ -105,19 +127,32 @@ public class Calculator {
      * @return arcus sine in radians.
      */
     public String arcSin(String sine) {
-        BigDecimal bigDecimalSine = new BigDecimal(sine);
-        BigDecimal bigDecimal1 = new BigDecimal("1");
-        BigDecimal bigDecimalMinus1 = new BigDecimal("-1");
-        if (bigDecimalSine.compareTo(bigDecimal1) == 0) {
-            return divide(PI, "2");
-        } else if (bigDecimalSine.compareTo(bigDecimalMinus1) == 0) {
-            return "-" + divide(PI, "2");
-        } else if (bigDecimalSine.compareTo(bigDecimalMinus1) < 0 ||
-                bigDecimalSine.compareTo(bigDecimal1) > 0) {
-            throw new ArithmeticException("Trying to calculate arcSin or arcCos from |x| > 1");
+        String result;
+        int tempPrecision = this.precision;
+        this.precision = this.precision + 10;
+
+        if (biggerEqualSmaller(sine, "1") == 0) {
+            result = divide(PI, "2");
+            this.precision = tempPrecision;
+            return new BigDecimal(result)
+                    .setScale(this.precision, RoundingMode.HALF_EVEN).toPlainString();
+        } else if (biggerEqualSmaller(sine, "-1") == 0) {
+            result = add(PI, divide(PI, "2"));
+            this.precision = tempPrecision;
+            return new BigDecimal(result)
+                    .setScale(this.precision, RoundingMode.HALF_EVEN).toPlainString();
+        } else if (biggerEqualSmaller(sine, "-1") > 0 ||
+                biggerEqualSmaller(sine, "1") < 0) {
+            throw new ArithmeticException("Trying to calculate arcSin from |x| > 1");
         }
 
-        return arcTg(sineToTangent(sine));
+        result = arcTg(sineToTangent(absolute(sine)));
+        if (biggerEqualSmaller("0", sine) < 0) {
+            result = add(result, PI);
+        }
+        this.precision = tempPrecision;
+        return new BigDecimal(result)
+                .setScale(this.precision, RoundingMode.HALF_EVEN).toPlainString();
     }
 
     /**
@@ -131,21 +166,27 @@ public class Calculator {
      * @return arcus tangent in radians.
      */
     public String arcTg(String tangent) {
-        BigDecimal bigX = new BigDecimal(tangent);
+        String result;
+        int tempPrecision = this.precision;
+        this.precision = this.precision + 10;
         String piBy4 = divide(Calculator.PI, "4");
 
-        int inputComparedTo1 = bigX.compareTo(new BigDecimal("1"));
-        int inputComparedToMinus1 = bigX.compareTo(new BigDecimal("-1"));
+        int inputComparedTo1 = biggerEqualSmaller("1", tangent);
+        int inputComparedToMinus1 = biggerEqualSmaller("-1", tangent);
         if (inputComparedTo1 == 0) {
-            return piBy4;
+            this.precision = tempPrecision;
+            return new BigDecimal(piBy4)
+                    .setScale(this.precision, RoundingMode.HALF_EVEN).toPlainString();
         } else if (inputComparedToMinus1 == 0) {
-            return "-" + piBy4;
+            result = multiply(PI, "0.75");
+            this.precision = tempPrecision;
+            return new BigDecimal(result)
+                    .setScale(this.precision, RoundingMode.HALF_EVEN).toPlainString();
         }
 
-        String result;
         if (inputComparedTo1 < 0 && inputComparedToMinus1 > 0) {
             result = "0";
-            for (int i = 0; i < (this.precision + 10); i++) {
+            for (int i = 0; i < this.precision; i++) {
                 int factor = 2 * i + 1;
                 String numerator = power("-1", i);
                 String denominator = "" + factor;
@@ -154,6 +195,7 @@ public class Calculator {
                 result = add(result, multiply(fraction, xPowered));
             }
 
+            this.precision = tempPrecision;
             return new BigDecimal(result).setScale(this.precision, RoundingMode.HALF_EVEN)
                     .toPlainString();
         } else {
@@ -172,6 +214,7 @@ public class Calculator {
             }
         }
 
+        this.precision = tempPrecision;
         return new BigDecimal(result).setScale(this.precision, RoundingMode.HALF_EVEN)
                 .toPlainString();
     }
